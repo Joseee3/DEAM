@@ -27,12 +27,12 @@ public class MainActivity extends AppCompatActivity {
 
             button.setOnClickListener(v -> {
                contador++;
-                //textView.setText("Hola Clase 2025 -1 !");
-                //textView2.setText(String.valueOf(contador));
+                textView.setText("Hola Clase 2025 -1 !");
+                textView2.setText(String.valueOf(contador));
 
-                Intent intent = new Intent(MainActivity.this, MainActivity2.class);
-
-                startActivity(intent);
+//                Intent intent = new Intent(MainActivity.this, MainActivity2.class);
+//
+//                startActivity(intent);
             });
     }
 
