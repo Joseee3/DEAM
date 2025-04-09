@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp">
+
+    <View
+        android:id="@+id/colorCircle"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/circulo_color"
+        app:circularflow_defaultRadius="@dimen/cardview_default_radius"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <TextView
+        android:id="@+id/tvColorName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Color Name"
+        android:textSize="16sp"
+        android:layout_marginLeft="10dp"
+        app:layout_constraintStart_toEndOf="@id/colorCircle"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0" />
+
+    <TextView
+        android:id="@+id/tvHexCode"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="#FFFFFF"
+        android:textSize="14sp"
+        android:layout_marginLeft="10dp"
+        app:layout_constraintStart_toEndOf="@id/colorCircle"
+        app:layout_constraintTop_toBottomOf="@id/tvColorName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
