@@ -1,9 +1,8 @@
 package com.upn.deam_firsts_project.adapters;
 
 import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,14 +12,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.upn.deam_firsts_project.R;
-import com.upn.deam_firsts_project.entities.color;
+import com.upn.deam_firsts_project.entities.Color;
 
 import java.util.List;
 
-public class colorAdapter extends RecyclerView.Adapter<colorAdapter.ViewHolder> {
-    private List<color> colorList;
+public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ViewHolder> {
+    private List<Color> colorList;
 
-    public colorAdapter(List<color> colorList) {
+    public ColorAdapter(List<Color> colorList) {
         this.colorList = colorList;
     }
 
@@ -33,15 +32,30 @@ public class colorAdapter extends RecyclerView.Adapter<colorAdapter.ViewHolder> 
 
 @Override
 public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-    color currentColor = colorList.get(position);
-    holder.tvColorName.setText(currentColor.getName());
-    holder.tvHexCode.setText(currentColor.getHexCode());
+    Color color = colorList.get(position);
+    holder.tvColorName.setText(color.getName());
+    holder.tvHexCode.setText(color.getHexCode());
 
-    // Cambiar el color del círculo usando setBackgroundTintList
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        holder.colorCircle.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor(currentColor.getHexCode())));
+
+//    try{
+//        String hex = "#" + color.getHexCode();
+//        holder.colorCircle.setBackgroundColor(android.graphics.Color.parseColor(hex));
+//    }catch (IllegalArgumentException e){
+//        Log.d("ColorAdapter", "Invalid color code: " + color.getHexCode());
+//    }
+
+    try{
+        String hex = "#" + color.getHexCode();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            holder.colorCircle.setBackgroundTintList(ColorStateList.valueOf(android.graphics.Color.parseColor(hex)));
+        } else {
+            holder.colorCircle.setBackgroundColor(android.graphics.Color.parseColor(hex));
+
+        }}catch (IllegalArgumentException e){
+        Log.d("ColorAdapter", "Invalid color code: " + color.getHexCode());
     }
-}
+
+    }
     @Override
     public int getItemCount() {
         return colorList.size();

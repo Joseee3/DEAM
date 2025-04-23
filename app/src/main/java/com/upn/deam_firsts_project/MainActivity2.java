@@ -4,13 +4,10 @@ import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.upn.deam_firsts_project.adapters.basicAdapter;
+import com.upn.deam_firsts_project.adapters.BasicAdapter;
 import com.upn.deam_firsts_project.entities.contact;
 
 import java.util.ArrayList;
@@ -38,7 +35,7 @@ public class MainActivity2 extends AppCompatActivity {
         RecyclerView rvBasic = findViewById(R.id.rvbasic);
         rvBasic.setLayoutManager(new LinearLayoutManager(this));
 
-        basicAdapter adapter = new basicAdapter(data);
+        BasicAdapter adapter = new BasicAdapter(data);
         rvBasic.setAdapter(adapter);
     }
 
