@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1080409276906",
+    "project_id": "deam20251",
+    "storage_bucket": "deam20251.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1080409276906:android:ee67ebd05713846fd4f293",
+        "android_client_info": {
+          "package_name": "com.upn.deam_firsts_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhn7xmtd7Z1QPIUvCJnK8yFnEMy0lJu8g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
