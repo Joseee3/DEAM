@@ -26,19 +26,20 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 public class PokemonActivity extends AppCompatActivity {
-    private RecyclerView recyclerView;
-    private PokemonAdapter adapter;
-    private List<Pokemon> pokemonList = new ArrayList<>();
     private int offset = 0;
+    private final int limit = 20;
     private boolean isLoading = false;
+    private List<Pokemon> pokemonList = new ArrayList<>();
+    private PokemonAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pokemon);
 
-        recyclerView = findViewById(R.id.rvpokemon);
+        RecyclerView recyclerView = findViewById(R.id.rvpokemon);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         adapter = new PokemonAdapter(pokemonList, pokemon -> {
             Intent intent = new Intent(this, PokemonDetailActivity.class);
             intent.putExtra("pokemon_name", pokemon.getName());
@@ -46,41 +47,42 @@ public class PokemonActivity extends AppCompatActivity {
         });
         recyclerView.setAdapter(adapter);
 
+        // Agregar el scroll listener para la paginación
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                if (!recyclerView.canScrollVertically(1) && !isLoading) {
-                    loadPokemon();
+                if (!recyclerView.canScrollVertically(1) && !isLoading) { // Verifica si llegó al final
+                    offset += limit; // Incrementa el offset
+                    loadPokemon(offset, limit); // Carga más datos
                 }
             }
         });
 
-        loadPokemon();
+        loadPokemon(offset, limit);
     }
 
-    private void loadPokemon() {
-        isLoading = true;
-       Retrofit retrofit = new Retrofit.Builder()
-               .baseUrl("https://pokeapi.co/api/v2/")
-               .addConverterFactory(GsonConverterFactory.create())
-               .build();
+    private void loadPokemon(int offset, int limit) {
+        isLoading = true; // Indica que se está cargando
+        IPokemonService service = new Retrofit.Builder()
+                .baseUrl("https://pokeapi.co/api/v2/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(IPokemonService.class);
 
-       IPokemonService service = retrofit.create(IPokemonService.class);
-
-        service.getPokemonList(offset, 20).enqueue(new Callback<PokemonResponse>() {
+        service.getPokemonList(offset, limit).enqueue(new Callback<PokemonResponse>() {
             @Override
             public void onResponse(Call<PokemonResponse> call, Response<PokemonResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    pokemonList.addAll(response.body().getResults());
-                    adapter.notifyDataSetChanged();
-                    offset += 20;
+                    List<Pokemon> newPokemonList = response.body().getResults();
+                    pokemonList.addAll(newPokemonList); // Agrega los nuevos datos
+                    adapter.notifyDataSetChanged(); // Notifica al adaptador
                 }
-                isLoading = false;
+                isLoading = false; // Finaliza la carga
             }
 
             @Override
             public void onFailure(Call<PokemonResponse> call, Throwable t) {
-                isLoading = false;
+                isLoading = false; // Finaliza la carga en caso de error
             }
         });
     }

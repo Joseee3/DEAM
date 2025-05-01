@@ -5,21 +5,20 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 public class Color {
+
+    public String id;
     @SerializedName("name")
-    private String name;
+    public String name;
     @SerializedName("color_hex")
-    private String hexCode;
+    public String hexCode;
+
+    public Color() {
+        // Default constructor
+    }
 
     public Color(String name, String hexCode) {
         this.name = name;
         this.hexCode = hexCode;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getHexCode() {
-        return hexCode;
-    }
 }

@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.upn.deam_firsts_project" />
+                  <option name="mobileSdkAppId" value="1:1080409276906:android:ee67ebd05713846fd4f293" />
+                  <option name="projectId" value="deam20251" />
+                  <option name="projectNumber" value="1080409276906" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

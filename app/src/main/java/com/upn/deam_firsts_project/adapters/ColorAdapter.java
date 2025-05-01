@@ -1,5 +1,7 @@
 package com.upn.deam_firsts_project.adapters;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Build;
 import android.util.Log;
@@ -7,69 +9,73 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.upn.deam_firsts_project.FormColorActivity;
 import com.upn.deam_firsts_project.R;
 import com.upn.deam_firsts_project.entities.Color;
 
 import java.util.List;
 
-public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ViewHolder> {
-    private List<Color> colorList;
+public class ColorAdapter extends RecyclerView.Adapter<ColorAdapter.ColorViewHolder> {
 
-    public ColorAdapter(List<Color> colorList) {
-        this.colorList = colorList;
+    private List<Color> data;
+    private Activity activity;
+    public ColorAdapter(List<Color> data, Activity activity) {
+
+        this.data = data;
+        this.activity = activity;
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_color, parent, false);
-        return new ViewHolder(view);
+    public ColorViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_color, parent, false);
+
+        return new ColorViewHolder(view);
     }
 
-@Override
-public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-    Color color = colorList.get(position);
-    holder.tvColorName.setText(color.getName());
-    holder.tvHexCode.setText(color.getHexCode());
+    @Override
+    public void onBindViewHolder(@NonNull ColorViewHolder holder, int position) {
+        Color color = data.get(position);
 
+        TextView tvColorName = holder.itemView.findViewById(R.id.tvColorName);
+        TextView tvColorHex = holder.itemView.findViewById(R.id.tvHexCode);
+        View vColorBg = holder.itemView.findViewById(R.id.colorCircle);
 
-//    try{
-//        String hex = "#" + color.getHexCode();
-//        holder.colorCircle.setBackgroundColor(android.graphics.Color.parseColor(hex));
-//    }catch (IllegalArgumentException e){
-//        Log.d("ColorAdapter", "Invalid color code: " + color.getHexCode());
-//    }
+        tvColorName.setText(color.name);
 
-    try{
-        String hex = "#" + color.getHexCode();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            holder.colorCircle.setBackgroundTintList(ColorStateList.valueOf(android.graphics.Color.parseColor(hex)));
-        } else {
-            holder.colorCircle.setBackgroundColor(android.graphics.Color.parseColor(hex));
+        holder.itemView.setOnClickListener(v -> {
+            Toast.makeText(v.getContext(), "Color: " + color.name, Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(v.getContext(), FormColorActivity.class);
+            intent.putExtra("colorId", color.id);
+            intent.putExtra("colorName", color.name);
+            intent.putExtra("colorHex", color.hexCode);
+            activity.startActivityForResult(intent, 123);
+        });
 
-        }}catch (IllegalArgumentException e){
-        Log.d("ColorAdapter", "Invalid color code: " + color.getHexCode());
+        try {
+            String hex = color.hexCode;
+            tvColorHex.setText(hex);
+            vColorBg.setBackgroundColor(android.graphics.Color.parseColor(hex));
+        } catch(Exception ex) {
+            Log.d("MAIN_APP", "Usando color por defecto");
+        }
     }
 
-    }
     @Override
     public int getItemCount() {
-        return colorList.size();
+        return data.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvColorName, tvHexCode;
-        View colorCircle;
+    class ColorViewHolder extends  RecyclerView.ViewHolder {
 
-        public ViewHolder(@NonNull View itemView) {
+        public ColorViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvColorName = itemView.findViewById(R.id.tvColorName);
-            tvHexCode = itemView.findViewById(R.id.tvHexCode);
-            colorCircle = itemView.findViewById(R.id.colorCircle);
         }
     }
 }

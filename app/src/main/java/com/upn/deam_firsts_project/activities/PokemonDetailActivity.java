@@ -43,7 +43,6 @@ public class PokemonDetailActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     PokemonDetail detail = response.body();
 
-                    // Mostrar datos en la UI
                     tvPokemonName.setText(detail.getName());
                     StringBuilder typesBuilder = new StringBuilder();
                     for (PokemonDetail.TypeWrapper typeWrapper : detail.getTypes()) {

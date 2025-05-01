@@ -21,7 +21,14 @@
             android:exported="true" />
 
         <activity
-            android:name=".activities.PokemonActivity"
+            android:name=".FormColorActivity"
+            android:exported="true" />
+        <activity
+            android:name=".CreateColorActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".ColorListActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

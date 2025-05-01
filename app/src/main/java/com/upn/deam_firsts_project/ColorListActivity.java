@@ -1,18 +1,35 @@
 package com.upn.deam_firsts_project;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.SearchView;
+import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 import com.upn.deam_firsts_project.adapters.ColorAdapter;
 import com.upn.deam_firsts_project.entities.Color;
-import com.upn.deam_firsts_project.entities.ColorResponse;
-import com.upn.deam_firsts_project.service.IColorService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -22,37 +39,211 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ColorListActivity extends AppCompatActivity {
 
+    RecyclerView rvColors;
+    boolean isLoading = false;
+    boolean isLastPage = false;
+    int currentPage = 1;
+    SearchView searchColors;
+
+    String busqueda = "";
+
+    List<Color> colorsData = new ArrayList<>();
+    ColorAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main3);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
 
-        List<Color> datacolor = new ArrayList<>();
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://67ff053258f18d7209efd124.mockapi.io")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+        Toast.makeText(getApplicationContext(), "ColorListActivity onCreate", Toast.LENGTH_SHORT).show();
 
-        IColorService service = retrofit.create(IColorService.class);
+        FloatingActionButton button = findViewById(R.id.fabGoToColorForm);
+        button.setOnClickListener(v -> {
+            Intent intent = new Intent(this, FormColorActivity.class);
+            //startActivity(intent);
+            startActivityForResult(intent, 100);
+        });
 
-        service.getColors().enqueue(new Callback<List<Color>>() {
+        rvColors = findViewById(R.id.rvListColors);
+        rvColors.setLayoutManager(new LinearLayoutManager(this));
+
+        setUpRecyclerView();
+//        setUpSearchView();
+
+        loadMoreColors(busqueda);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode != RESULT_OK) return;
+
+        if (requestCode == 123) {
+
+            String colorJSON = data.getStringExtra("colorJSON");
+            Color updatedColor = new Gson().fromJson(colorJSON, Color.class);
+
+            Color color = colorsData.stream().filter(c -> c.id == updatedColor.id)
+                    .findFirst().orElse(null);
+            int position = colorsData.indexOf(color);
+
+            if (color != null) {
+                color.name = updatedColor.name;
+                color.hexCode = updatedColor.hexCode;
+                adapter.notifyItemChanged(position); //esto es lo relevante
+            }
+        }
+
+        if (requestCode == 100) {
+            String colorJSON = data.getStringExtra("colorJSON");
+            Color createdColor = new Gson().fromJson(colorJSON, Color.class);
+
+            colorsData.add(createdColor);
+            adapter.notifyItemInserted(colorsData.size() -1);
+        }
+
+    }
+
+    //    @Override
+//    protected  void onResume() {
+//        super.onResume();
+//
+//        Toast.makeText(getApplicationContext(), "ColorListActivity onResume", Toast.LENGTH_SHORT).show();
+//
+//        data.clear();
+//        currentPage = 1;
+//        adapter.notifyDataSetChanged(); // notifica al adapter que los datos han cambiado
+//
+//        loadMoreColors();
+//    }
+
+    private void loadMoreColors(String query) {
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("colors");
+
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onResponse(Call<List<Color>> call, Response<List<Color>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    // Asignar la lista de colores directamente
-                    List<Color> data = response.body();
-
-                    ColorAdapter adapter = new ColorAdapter(data);
-                    RecyclerView rvcolor = findViewById(R.id.rvcolor);
-                    rvcolor.setLayoutManager(new LinearLayoutManager(ColorListActivity.this));
-                    rvcolor.setAdapter(adapter);
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                colorsData.clear(); // Limpia la lista para evitar duplicados
+                for (DataSnapshot colorSnapshot : snapshot.getChildren()) {
+                    Color color = colorSnapshot.getValue(Color.class);
+                    if (color != null) {
+                        colorsData.add(color);
+                    }
                 }
+                adapter.notifyDataSetChanged(); // Notifica al adaptador que los datos han cambiado
             }
 
             @Override
-            public void onFailure(Call<List<Color>> call, Throwable throwable) {
-                // Manejar error
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("MAIN_APP", "Error al cargar colores: " + error.getMessage());
+            }
+        });
+
+
+//        isLoading = true;
+//
+//        Retrofit retrofit = new Retrofit.Builder()
+//                .baseUrl("https://67ff051e58f18d7209efd099.mockapi.io")
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .build();
+//        ColorService service = retrofit.create(ColorService.class);
+//        service.getColors(20, currentPage, query).enqueue(new Callback<List<Color>>() {
+//            @Override
+//            public void onResponse(Call<List<Color>> call, Response<List<Color>> response) {
+//                isLoading = false;
+//
+//                if (!response.isSuccessful()) return;
+//                if (response.body() == null) return;
+//                if (response.body().isEmpty()) {
+//                    isLastPage = true;
+//                    return;
+//                }
+//
+//                colorsData.addAll(response.body()); // añade los nuevos colores a la lista
+//                adapter.notifyDataSetChanged();
+//            }
+//
+//            @Override
+//            public void onFailure(Call<List<Color>> call, Throwable throwable) {
+//                isLoading = false;
+//            }
+//        });
+    }
+
+    private void setUpRecyclerView() {
+
+        adapter = new ColorAdapter(colorsData, ColorListActivity.this);
+        rvColors.setAdapter(adapter);
+
+        // Scroll Listener nos permite detectar cuando el usuario hace scroll y llega al final de la lista
+        // para cargar más datos
+//        rvColors.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+//                super.onScrollStateChanged(recyclerView, newState);
+//            }
+//
+//            @Override
+//            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//
+//                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+//                if (layoutManager == null) return;
+//
+//                int visibleItemCount = layoutManager.getChildCount();
+//                int totalItemCount = layoutManager.getItemCount();
+//                int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+//
+//                if (!isLoading && !isLastPage) {
+//                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+//                            && firstVisibleItemPosition >= 0) {
+//
+//                        currentPage++;
+//                        loadMoreColors(busqueda);
+//                    }
+//                }
+//            }
+//        });
+    }
+
+    private void setUpSearchView() {
+        searchColors = findViewById(R.id.searchColor);
+        searchColors.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Log.d("MAIN_APP", query);
+
+                if(!Objects.equals(busqueda, query)) {
+                    colorsData.clear();
+                    adapter.notifyDataSetChanged();
+                    busqueda = query;
+                    currentPage = 1;
+                    loadMoreColors(busqueda);
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Log.d("MAIN_APP", newText);
+                if (newText.isEmpty()) {
+                    colorsData.clear();
+                    adapter.notifyDataSetChanged();
+                    busqueda = "";
+                    currentPage = 1;
+                    loadMoreColors(busqueda);
+                }
+                return false;
             }
         });
     }
