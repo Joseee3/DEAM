@@ -9,14 +9,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.upn.deam_firsts_project.R;
-import com.upn.deam_firsts_project.entities.contact;
+import com.upn.deam_firsts_project.entities.Contact;
 
 import java.util.List;
 
 public class BasicAdapter extends RecyclerView.Adapter<BasicAdapter.ViewHolder> {
-    private List<contact> data;
+    private List<Contact> data;
 
-    public BasicAdapter(List<contact> data) {
+    public BasicAdapter(List<Contact> data) {
         this.data = data;
     }
     @NonNull
@@ -28,7 +28,7 @@ public class BasicAdapter extends RecyclerView.Adapter<BasicAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull BasicAdapter.ViewHolder holder, int position) {
-        contact contact = data.get(position);
+        Contact contact = data.get(position);
         holder.tvText.setText(contact.getName());
         holder.tvText2.setText(contact.getPhone());
     }

@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.upn.deam_firsts_project.adapters.BasicAdapter;
-import com.upn.deam_firsts_project.entities.contact;
+import com.upn.deam_firsts_project.entities.Contact;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,14 +23,14 @@ public class MainActivity2 extends AppCompatActivity {
 
 
 
-        List<contact> data = new ArrayList<>();
+        List<Contact> data = new ArrayList<>();
 
-        data.add(new contact("Juan", "123456789"));
-        data.add(new contact("Maria", "987654321"));
-        data.add(new contact("Pedro", "456789123"));
-        data.add(new contact("Ana", "321654987"));
-        data.add(new contact("Luis", "789123456"));
-        data.add(new contact("Sofia", "654987321"));
+//        data.add(new Contact("Juan", "123456789"));
+//        data.add(new Contact("Maria", "987654321"));
+//        data.add(new Contact("Pedro", "456789123"));
+//        data.add(new Contact("Ana", "321654987"));
+//        data.add(new Contact("Luis", "789123456"));
+//        data.add(new Contact("Sofia", "654987321"));
 
         RecyclerView rvBasic = findViewById(R.id.rvbasic);
         rvBasic.setLayoutManager(new LinearLayoutManager(this));
