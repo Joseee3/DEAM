@@ -1,8 +1,11 @@
 package com.upn.deam_firsts_project.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -29,7 +32,35 @@ public class PokemonDetailActivity extends AppCompatActivity {
         TextView tvPokemonName = findViewById(R.id.tvPokemonName);
         TextView tvPokemonTypes = findViewById(R.id.tvPokemonTypes);
 
+
+        Button btnViewLocation = findViewById(R.id.btnViewLocation);
+        Button btnAddLocation = findViewById(R.id.btnAddLocation);
+
+        // Obtener el nombre del Pokémon (o ID si es necesario)
         String pokemonName = getIntent().getStringExtra("pokemon_name");
+
+        btnViewLocation.setOnClickListener(v -> {
+            if (pokemonName == null || pokemonName.isEmpty()) {
+                Toast.makeText(this, "Error: Pokémon name is missing.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Intent intent = new Intent(this, ViewLocationsActivity.class);
+            intent.putExtra("pokemon_name", pokemonName); // Pass the Pokémon name
+            startActivity(intent);
+        });
+
+        btnAddLocation.setOnClickListener(v -> {
+            if (pokemonName == null || pokemonName.isEmpty()) {
+                Toast.makeText(this, "Error: Pokémon name is missing.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Intent intent = new Intent(this, AddLocationActivity.class);
+            intent.putExtra("pokemon_name", pokemonName); // Pasa el mismo nombre
+            startActivity(intent);
+        });
+
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://pokeapi.co/api/v2/")
